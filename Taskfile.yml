@@ -1,0 +1,55 @@
+version: "3"
+
+vars:
+  GREETING: Hello, world!
+
+tasks:
+  default:
+    desc: Print a greeting message
+    cmds:
+      - echo "{{.GREETING}}"
+    silent: true
+
+  goose:status:
+    desc: Prints the goose status
+    cmds:
+      - goose status
+
+  goose:create:
+    desc: Create a new DB migrations
+    requires:
+      vars:
+        - MIGRATION_NAME
+    cmds:
+      - goose create {{.MIGRATION_NAME}} postgresql
+
+  goose:up-to:
+    desc: Migrate database to given version
+    requires:
+      vars:
+        - VERSION
+    cmds:
+      - goose up-to {{.VERSION}}
+
+  goose:up-by-one:
+    desc: Appy the changes to the next migrations
+    cmds:
+      - goose up-by-one
+
+  goose:down-to:
+    desc: Rollback migrations to a specific version
+    requires:
+      vars:
+        - VERSION
+    cmds:
+      - goose down-to {{.VERSION}}
+
+  goose:down-by-one:
+    desc: Rollback a single migration from the current version
+    cmds:
+      - goose down
+
+  goose:down-all:
+    desc: Rollback all the migrations
+    cmds:
+      - goose down-to 0
