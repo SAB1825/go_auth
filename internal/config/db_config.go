@@ -38,5 +38,7 @@ func SetupDb(ctx context.Context, cfg *DBConfig, logger *zap.Logger) (*pgxpool.P
 		return nil, err
 	}
 
+	logger.Info("Successfully connected to the database")
+
 	return pool, nil
 }

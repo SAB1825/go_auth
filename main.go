@@ -1,19 +1,25 @@
 package main
 
 import (
-	"net/http"
+	"log"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	"github.com/SAB1825/go_auth/cmd/app"
+	"github.com/SAB1825/go_auth/internal/config"
 )
 
 func main() {
-	r := chi.NewRouter()
-	r.Use(middleware.Logger)
+	serverConfig, err := config.LoadServerConfig()
+	if err != nil {
+		log.Fatal("Failed to load the server config: " + err.Error())
+	}
+	dbConfig, err := config.LoadDbConfig()
+	if err != nil {
+		log.Fatal("Failed to load the DB config: " + err.Error())
+	}
 
-	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("ok"))
-	})
-
-	http.ListenAndServe(":3000", r)
+	application := &app.App{
+		ServerConfig: serverConfig,
+		DbConfig:     dbConfig,
+	}
+	application.Run()
 }
