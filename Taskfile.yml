@@ -1,30 +1,35 @@
 version: "3"
 
-vars:
-  GREETING: Hello, world!
+dotenv: [".env"]
 
 tasks:
   default:
-    desc: Print a greeting message
+    desc: List all tasks
     cmds:
-      - echo "{{.GREETING}}"
+      - task --list
     silent: true
 
   goose:status:
-    desc: Prints the goose status
+    desc: Print the goose migration status
     cmds:
       - goose status
 
   goose:create:
-    desc: Create a new DB migrations
+    desc: "Create a new SQL migration (usage: task goose:create MIGRATION_NAME=create_users_table)"
     requires:
       vars:
         - MIGRATION_NAME
     cmds:
-      - goose create {{.MIGRATION_NAME}} postgresql
+      - mkdir -p $GOOSE_MIGRATION_DIR
+      - goose create {{.MIGRATION_NAME}} sql
+
+  goose:up-all:
+    desc: Apply all pending migrations
+    cmds:
+      - goose up
 
   goose:up-to:
-    desc: Migrate database to given version
+    desc: "Migrate up to a version (usage: task goose:up-to VERSION=20261012201500)"
     requires:
       vars:
         - VERSION
@@ -32,24 +37,25 @@ tasks:
       - goose up-to {{.VERSION}}
 
   goose:up-by-one:
-    desc: Appy the changes to the next migrations
+    desc: Apply the next pending migration
     cmds:
       - goose up-by-one
 
+  goose:down-by-one:
+    desc: Roll back the most recent migration
+    cmds:
+      - goose down
+
   goose:down-to:
-    desc: Rollback migrations to a specific version
+    desc: "Roll back to a version (usage: task goose:down-to VERSION=20261012201500)"
     requires:
       vars:
         - VERSION
     cmds:
       - goose down-to {{.VERSION}}
 
-  goose:down-by-one:
-    desc: Rollback a single migration from the current version
-    cmds:
-      - goose down
-
   goose:down-all:
-    desc: Rollback all the migrations
+    desc: Roll back all migrations
+    prompt: This will roll back ALL migrations. Continue?
     cmds:
       - goose down-to 0

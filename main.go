@@ -10,8 +10,9 @@ import (
 func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("welcome"))
+
+	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("ok"))
 	})
 
 	http.ListenAndServe(":3000", r)
